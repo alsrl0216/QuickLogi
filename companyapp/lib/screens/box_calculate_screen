@@ -1,0 +1,254 @@
+import 'package:flutter/material.dart';
+
+class Box {
+  double width;
+  double height;
+
+  Box({required this.width, required this.height});
+}
+
+class BoxSelectionPage extends StatefulWidget {
+  @override
+  _BoxSelectionPageState createState() => _BoxSelectionPageState();
+}
+
+class _BoxSelectionPageState extends State<BoxSelectionPage> {
+  List<Box> boxes = [];
+
+  void _addBox() {
+    setState(() {
+      boxes.add(Box(width: 0.0, height: 0.0));
+    });
+  }
+
+  void _removeBox(int index) {
+    setState(() {
+      boxes.removeAt(index);
+    });
+  }
+
+  void _resetBoxes() {
+    setState(() {
+      boxes.clear();
+    });
+  }
+
+  void _navigateToResultPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ContainerResultPage(
+          boxes: boxes,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Box Packing App'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                onPressed: _addBox,
+                child: Text('Add Box'),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Added Boxes:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8.0),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: boxes.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: 120.0,
+                              child: TextField(
+                                decoration: InputDecoration(labelText: 'Width (m)'),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    boxes[index].width = double.tryParse(value) ?? 0.0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 16.0),
+                          Expanded(
+                            child: Container(
+                              width: 120.0,
+                              child: TextField(
+                                decoration: InputDecoration(labelText: 'Height (m)'),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    boxes[index].height = double.tryParse(value) ?? 0.0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _removeBox(index);
+                            },
+                            icon: Icon(Icons.delete),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.0),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  _navigateToResultPage();
+                },
+                child: Text('Calculate'),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  _resetBoxes();
+                },
+                child: Text('Reset Boxes'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ContainerResultPage extends StatelessWidget {
+  final List<Box> boxes;
+
+  ContainerResultPage({required this.boxes});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Container Packing Result'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Container Size:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8.0),Row(
+              children: [
+                Text(
+                  'Width:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8.0),
+                Text(
+                  '6.058 m',
+                ),
+              ],
+            ),
+            SizedBox(height: 8.0),
+            Row(
+              children: [
+                Text(
+                  'Height:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8.0),
+                Text(
+                  '2.438 m',
+                ),
+              ],
+            ),
+            SizedBox(height: 16.0),
+            Text(
+              'Box Sizes:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8.0),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: boxes.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Box ${index + 1}:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8.0),
+                    Row(
+                      children: [
+                        Text(
+                          'Width:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8.0),
+                        Text(
+                          '${boxes[index].width} m',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8.0),
+                    Row(
+                      children: [
+                        Text(
+                          'Height:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8.0),
+                        Text(
+                          '${boxes[index].height} m',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class BoxPackingApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Box Packing App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: BoxSelectionPage(),
+    );
+  }
+}
